@@ -1,36 +1,35 @@
-const { hexStripZeros } = require("ethers/lib/utils")
-
 const main = async () => {
-    const [owner, randomPerson] = await hre.ethers.getSigners();
     const waveContractFactory = await hre.ethers.getContractFactory("Wave");
     const waveContract = await waveContractFactory.deploy();
     await waveContract.deployed();
-
-    console.log("Contract deployed to:", waveContract.address);
-    console.log("Contract Deployed by:", owner.address);
-
+    console.log("Contract addy:", waveContract.address);
+  
     let waveCount;
     waveCount = await waveContract.getTotalWaves();
-
-    let waveTxn = await waveContract.wave();
-    await waveTxn.wait();
-
-    waveCount = await waveContract.getTotalWaves();
-
-    waveTxn = await waveContract.connect(randomPerson).wave();
-    await waveTxn.wait();
-
-    waveCount = await waveContract.getTotalWaves();
-};
-
-const runMain = async () => {
+    console.log(waveCount.toNumber());
+  
+    /**
+     * Let's send a few waves!
+     */
+    let waveTxn = await waveContract.wave("A message!");
+    await waveTxn.wait(); // Wait for the transaction to be mined
+  
+    const [_, randomPerson] = await hre.ethers.getSigners();
+    waveTxn = await waveContract.connect(randomPerson).wave("Another message!");
+    await waveTxn.wait(); // Wait for the transaction to be mined
+  
+    let allWaves = await waveContract.getAllWaves();
+    console.log(allWaves);
+  };
+  
+  const runMain = async () => {
     try {
-        await main();
-        process.exit(0); //exit node process without error
+      await main();
+      process.exit(0);
     } catch (error) {
-        console.log(error);
-        process.exit(1); //exit node process while indicating "uncaught fatal exception" error
+      console.log(error);
+      process.exit(1);
     }
-};
-
-runMain();
+  };
+  
+  runMain();
