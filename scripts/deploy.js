@@ -1,27 +1,22 @@
-const { getContractFactory } = require("@nomiclabs/hardhat-ethers/types");
-
 const main = async () => {
-    const [deployer] = await hre.ethers.getSigners();
-    const accountBalance = await deployer.getBalance();
-
-    console.log("deploying contracts with account: ", deployer.address);
-    console.log("Account balance: ", accountBalance.toString());
-
     const waveContractFactory = await hre.ethers.getContractFactory("Wave");
-    const waveContract = await waveContractFactory.deploy();
+    const waveContract = await waveContractFactory.deploy({
+      value: hre.ethers.utils.parseEther("0.001"),
+    });
+  
     await waveContract.deployed();
-
+  
     console.log("Wave address: ", waveContract.address);
-};
-
-const runMain = async () => {
+  };
+  
+  const runMain = async () => {
     try {
-        await main();
-        process.exit(0);
+      await main();
+      process.exit(0);
     } catch (error) {
-        console.log(error);
-        process.exit(1);
+      console.error(error);
+      process.exit(1);
     }
-};
-
-runMain();
+  };
+  
+  runMain();
